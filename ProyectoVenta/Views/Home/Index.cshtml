@@ -199,6 +199,11 @@
             }
         })
 
+        function validarVacio() {
+            document.getElementById('swal-input1').addEventListener('input', function (e) {
+                e.target.value = e.target.value.replace(/[^1-9]/g, '').replace(/(.{4})/g, '$1 ').trim();
+            });
+        }
 
         function AgregarProducto(idproducto) {
             $.ajax({
@@ -218,8 +223,11 @@
                             const { value: formValues } = await Swal.fire({
                                 title: 'Cantidad',
                                 html:
-                                    '<input type="number" min="1" max="5" id="swal-input1" class="swal2-input">',
+                                    //'<input type="number" min="1" max="5" maxlength="1" id="swal-input1" class="swal2-input">',
+                                    '<input type="text" min="0" max="1" name="num" maxlength="1" size="2" id="swal-input1" class="swal2-input text-center" onkeypress="validarVacio()"/>',
                                 focusConfirm: false,
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
                                 preConfirm: () => {
                                     // return [
                                     //    quantity = document.getElementById('swal-input1').value
@@ -270,7 +278,7 @@
 
                             addProduct(productos);
                         }
-                        else{
+                        else {
                             let total = parseInt(data.precioVenta) * parseInt(value);
                             producto = {
                                 IdProducto: data.idProducto,
@@ -285,7 +293,7 @@
                             productos.push(producto);
                             addProduct(productos);
                         }
-                        
+
                     }
 
                     if (existe) {
