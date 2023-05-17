@@ -67,13 +67,9 @@
                             </tbody>
                         </table>
                     </div>
-
-
                 </div>
             </div>
         </div>
-
-
     </div>
 
     <div class="col-sm-4">
@@ -87,18 +83,11 @@
                             </div>
                             <div class="col-sm-6 text-end">
                                 <p id="pVentaTotal" class="text-warning fw-bold m-0 p-0"></p>
-
                             </div>
                         </div>
 
                     </div>
                     <div class="card-body">
-
-                        @* <div class="input-group input-group-sm mb-2">
-                        <span class="input-group-text bg-dark">Nro Venta</span>
-                        <input type="text" class="form-control form-control-sm" disabled>
-                        </div>
-                        *@
                         <div class="input-group input-group-sm mb-2">
                             <span class="input-group-text bg-dark">Tipo de Pago:</span>
                             <select class="form-select form-select-sm" id="cbotipopago" style="cursor:pointer">
@@ -109,7 +98,7 @@
                         <hr />
                         <label class="text-muted">Presiona la tecla ENTER para calcular el cambio</label>
                         <div class="input-group input-group-sm mb-2">
-                            
+
                             <span class="input-group-text bg-dark">Pago con</span>
                             <input type="text" class="form-control form-control-sm" id="txtPagoCon">
                         </div>
@@ -212,7 +201,6 @@
 
 
         function AgregarProducto(idproducto) {
-
             $.ajax({
                 url: "@Url.Action("ObtenerProducto","Home")?idproducto=" + idproducto,
                 type: "GET",
@@ -221,52 +209,92 @@
                 success: function (data) {
 
                     const existe = productos.some(element => element.IdProducto === data.idProducto);
+                    var producto = {};
+                    let quantity;
 
-                    if (existe) {
-                        Object.keys(productos).forEach(index => {
+                    function sweetAlert() {
+                        (async () => {
 
-                            if (productos[index].IdProducto === data.idProducto) {
-                                productos[index] = {
-                                    IdProducto: data.idProducto,
-                                    Descripcion: data.descripcion,
-                                    PrecioVenta: data.precioVenta,
-                                    Cantidad: productos[index].Cantidad + 1,
-                                    Total: data.precioVenta * (productos[index].Cantidad + 1)
+                            const { value: formValues } = await Swal.fire({
+                                title: 'Cantidad',
+                                html:
+                                    '<input type="number" min="1" max="5" id="swal-input1" class="swal2-input">',
+                                focusConfirm: false,
+                                preConfirm: () => {
+                                    // return [
+                                    //    quantity = document.getElementById('swal-input1').value
+                                    //]
+                                    quantity = document.getElementById('swal-input1').value
+                                    addQuantity(quantity);
                                 }
-                            }
-                        });
-
-                    } else {
-                        var producto = {
-                            IdProducto: data.idProducto,
-                            Descripcion: data.descripcion,
-                            PrecioVenta: data.precioVenta,
-                            Cantidad: 1,
-                            Total: data.precioVenta
-                        }
-
-                        productos.push(producto);
+                            })
+                        })()
                     }
 
-                    $("#tabla tbody").html("");
+                    function addProduct(item) {
+                        $("#tabla tbody").html("");
 
-                    $.each(productos, function (i, item) {
+                        $.each(productos, function (i, item) {
+                            $("<tr>").append(
+                                $("<td>").append(item.Descripcion),
+                                $("<td>").append(item.Cantidad),
+                                $("<td>").append(item.PrecioVenta.toFixed(2)),
+                                $("<td>").append(item.Total.toFixed(2)),
+                                $("<td>").append(
+                                    $("<button>").addClass("btn btn-danger btn-eliminar btn-sm").append(
+                                        $("<i>").addClass("bi bi-trash-fill")
+                                    )
+                                ),
+                            ).data("idproducto", item.IdProducto).appendTo("#tabla tbody")
+                        })
 
-                        $("<tr>").append(
-                            $("<td>").append(item.Descripcion),
-                            $("<td>").append(item.Cantidad),
-                            $("<td>").append(item.PrecioVenta.toFixed(2)),
-                            $("<td>").append(item.Total.toFixed(2)),
-                            $("<td>").append(
-                                $("<button>").addClass("btn btn-danger btn-eliminar btn-sm").append(
-                                    $("<i>").addClass("bi bi-trash-fill")
-                                )
-                            ),
-                        ).data("idproducto", item.IdProducto).appendTo("#tabla tbody")
-                    })
+                        MostrarPrecios();
+                    }
 
+                    function addQuantity(value) {
+                        if (existe) {
+                            Object.keys(productos).forEach(index => {
+                                console.log('productos:', productos, 'indice:', index);
+                                if (productos[index].IdProducto === data.idProducto) {
+                                    productos[index] = {
+                                        IdProducto: data.idProducto,
+                                        Descripcion: data.descripcion,
+                                        PrecioVenta: data.precioVenta,
+                                        Cantidad: productos[index].Cantidad + parseInt(value),
+                                        //Cantidad: data.Cantidad,
+                                        Total: data.precioVenta * (productos[index].Cantidad + parseInt(value))
+                                        // Total: data.Total
+                                    }
+                                }
+                            });
 
-                    MostrarPrecios();
+                            addProduct(productos);
+                        }
+                        else{
+                            let total = parseInt(data.precioVenta) * parseInt(value);
+                            producto = {
+                                IdProducto: data.idProducto,
+                                Descripcion: data.descripcion,
+                                PrecioVenta: data.precioVenta,
+                                //Cantidad: 1,
+                                Cantidad: parseInt(value),
+                                //Total: data.precioVenta
+                                Total: total
+                            }
+
+                            productos.push(producto);
+                            addProduct(productos);
+                        }
+                        
+                    }
+
+                    if (existe) {
+                        sweetAlert();
+
+                    } else {
+
+                        sweetAlert();
+                    }
                 },
                 error: function (error) {
                     console.log("bad")
