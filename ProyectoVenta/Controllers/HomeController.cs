@@ -12,6 +12,7 @@ namespace ProyectoVenta.Controllers
     {
         DA_Producto _daProducto = new DA_Producto();
         DA_Venta _daVenta = new DA_Venta();
+        DA_Cliente _daCliente = new();
 
         public IActionResult Index()
         {
@@ -44,6 +45,29 @@ namespace ProyectoVenta.Controllers
         }
 
         [HttpGet]
+        public JsonResult AutoCompleteClient(string search)
+        {
+            List<AutocompleteClient> autocompletes = new();
+            autocompletes = _daCliente.Listar()
+                .Where(x => string.Concat(x.NumeroIdentificacion.ToUpper(), x.NombresCompletos.ToUpper()).Contains(search.ToUpper()))
+                .Select(y => new AutocompleteClient
+                {
+                    label = $"{y.NumeroIdentificacion} - {y.NombresCompletos}",
+                    values = new Cliente
+                    {
+                        IdCliente = y.IdCliente,
+                        NumeroIdentificacion = y.NumeroIdentificacion,
+                        NombresCompletos = y.NombresCompletos,
+                        NumeroTelefonico = y.NumeroTelefonico,
+                        Correo = y.Correo,
+                        Direccion = y.Direccion
+                    }
+                }).ToList();
+
+            return Json(autocompletes);
+        }
+
+        [HttpGet]
         public JsonResult ObtenerProducto(int idproducto)
         {
             Producto? oProducto = new Producto();
@@ -62,6 +86,8 @@ namespace ProyectoVenta.Controllers
                 new XElement("NumeroDocumento","0"),
                 new XElement("DocumentoCliente",body.DocumentoCliente),
                 new XElement("NombreCliente",body.NombreCliente),
+                new XElement("TelefonoCliente", body.TelefonoCliente),
+                new XElement("DireccionCliente", body.DireccionCliente),
                 new XElement("MontoPagoCon",body.MontoPagoCon),
                 new XElement("MontoCambio",body.MontoCambio),
                 new XElement("MontoSubTotal",body.MontoSubTotal),

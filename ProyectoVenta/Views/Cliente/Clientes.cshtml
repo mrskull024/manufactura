@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Usuarios";
+    ViewData["Title"] = "Clientes";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -71,14 +71,14 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
+        <li class="breadcrumb-item active" aria-current="page">Clientes</li>
     </ol>
 </nav>
 
 
 <div class="card">
     <div class="card-header">
-        Lista de usuarios
+        Lista de clientes
     </div>
     <div class="card-body">
 
@@ -87,10 +87,12 @@
                 <table id="tbdata" class="table table-striped w-100 shadow" style="width:100%">
                     <thead>
                         <tr>
-                            <th>IdUsuario</th>
-                            <th>Nombre Completo</th>
+                            <th>IdCliente</th>
+                            <th>Nro. Idenitficación</th>
+                            <th>Nombres</th>
+                            <th>Teléfono</th>
                             <th>Correo</th>
-                            <th>Clave</th>
+                            <th>Dirección</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -103,47 +105,49 @@
 
 </div>
 
-<div id="modalUsuario" class="modal" tabindex="-1" data-bs-backdrop="static">
+<div id="modalCliente" class="modal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Detalle Usuario</h5>
+                <h5 class="modal-title">Detalle Cliente</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form class="needs-validation" novalidate>
-                    <input id="txtidusuario" value="0" type="hidden" />
+                    <input id="txtidcliente" value="0" type="hidden" />
 
                     <div class="row mt-2 g-2">
                         <div class="col-sm-6">
-                            <label class="form-label">Nombre Completo</label>
-                            <input type="text" class="form-control form-control-sm" id="txtnombrecompleto" maxlength="70" required />
+                            <label class="form-label">Nro. Indetificación</label>
+                            <input type="text" class="form-control form-control-sm" id="txtidentificacion" maxlength="20" required />
+                            <div class="invalid-feedback">Ingrese identificación</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Nombres</label>
+                            <input type="text" class="form-control form-control-sm" id="txtnombres" maxlength="70" required />
                             <div class="invalid-feedback">Ingrese nombre completo</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Nro. Teléfonico</label>
+                            <input type="text" class="form-control form-control-sm" id="txttelefono" maxlength="10" required />
+                            <div class="invalid-feedback">Ingrese número teléfonico</div>
                         </div>
                         <div class="col-sm-6">
                             <label class="form-label">Correo</label>
                             <input type="text" class="form-control form-control-sm" id="txtcorreo" maxlength="40" required />
                             <div class="invalid-feedback">Ingrese correo</div>
                         </div>
-                        <div class="col-sm-6">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control form-control-sm" id="txtclave" maxlength="10" required />
-                            <div class="invalid-feedback">Ingrese contraseña</div>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label">Confirmar Contraeña</label>
-                            <input type="password" class="form-control form-control-sm myCpwdClass" id="txtclaveconfirmar" maxlength="10" required />
-                            @*<div class="valid-feedback" id="cPwdValid">Contraseñas coinciden</div>
-                            <div class="invalid-feedback" id="cPwdInvalid">Las contraseñas no coinciden</div>*@
-                            <div class="invalid-feedback" id="cPwdInvalid">Ingrese contraseña</div>
+                        <div class="col-sm-12">
+                            <label class="form-label">Dirección</label>
+                            <textarea class="form-control form-control-sm" id="txtdireccion" rows="5" required></textarea>
+                            <div class="invalid-feedback">Ingrese dirección</div>
                         </div>
                     </div>
                 </form>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                <button id="btnguardarusuario" type="button" class="btn btn-primary">Guardar</button>
+                <button id="btnguardarcliente" type="button" class="btn btn-primary">Guardar</button>
             </div>
         </div>
     </div>
@@ -196,8 +200,8 @@
                             operacion = "crear";
                             limpiarControles();
                             $(".needs-validation").removeClass("was-validated")
-                            $("#txtidusuario").val("0");
-                            $("#modalUsuario").modal("show");
+                            $("#txtidcliente").val("0");
+                            $("#modalCliente").modal("show");
 
                         }
                     },
@@ -205,24 +209,26 @@
                         text: 'Exportar Excel',
                         extend: 'excelHtml5',
                         title: '',
-                        filename: 'Reporte Usuarios',
+                        filename: 'Reporte Clientes',
                         exportOptions: {
-                            columns: [1, 2]
+                            columns: [1, 2, 3, 4, 5]
                         }
                     }, 'pageLength'
                 ],
                 pageLength: 10,
                 responsive: true,
                 "ajax": {
-                    "url": '@Url.Action("ListaUsuario", "Usuario")',
+                    "url": '@Url.Action("ListaClientes", "Cliente")',
                     "type": "GET",
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "idUsuario" },
-                    { "data": "nombreCompleto" },
+                    { "data": "idCliente" },
+                    { "data": "numeroIdentificacion" },
+                    { "data": "nombresCompletos" },
+                    { "data": "numeroTelefonico" },
                     { "data": "correo" },
-                    { "data": "clave" },
+                    { "data": "direccion" },
                     {
                         "defaultContent": '<button class="btn btn-primary btn-editar btn-sm me-2"><i class="bi bi-pencil-fill"></i></button>' +
                             '<button class="btn btn-danger btn-eliminar btn-sm"><i class="bi bi-trash-fill"></i></button>',
@@ -243,7 +249,7 @@
                         var title = $(cell).text();
 
                         //especificar que columna debe mostrar la caja de filtro
-                        if ($(api.column(colIdx).header()).index() >= 0 && $(api.column(colIdx).header()).index() != 2) {
+                        if ($(api.column(colIdx).header()).index() >= 0 && $(api.column(colIdx).header()).index() != 4) {
                             $(cell).html('<input type="text" placeholder="buscar..."/>');
                         }
 
@@ -287,7 +293,7 @@
 
 
 
-        $("#btnguardarusuario").on("click", function () {
+        $("#btnguardarcliente").on("click", function () {
 
             //BUSCAR EN GOOGLE 2Validation · Bootstrap v5.0""
 
@@ -299,30 +305,18 @@
 
                 if (form.checkValidity()) {
 
-                    if ($("#txtclave").val() != $("#txtclaveconfirmar").val()) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'La contraseñas no coinciden',
-                        })
-                        //$("#txtclaveconfirmar").removeClass('is-valid')
-                        //$("#txtclaveconfirmar").addClass("is-invalid")
-                        //$('#cPwdInvalid').html('La contraseñas no coinciden')
-                        //$('#cPwdInvalid').show();
-                        return;
-                    }
-
-
                     console.log("Listo para registrar");
                     var request_body = {
-                        IdUsuario: $("#txtidusuario").val(),
-                        NombreCompleto: $("#txtnombrecompleto").val(),
+                        IdCliente: $("#txtidcliente").val(),
+                        NumeroIdentificacion: $("#txtidentificacion").val(),
+                        NombresCompletos: $("#txtnombres").val(),
+                        NumeroTelefonico: $("#txttelefono").val(),
                         Correo: $("#txtcorreo").val(),
-                        Clave: $("#txtclave").val()
+                        Direccion: $("#txtdireccion").val()
                     };
 
-
                     jQuery.ajax({
-                        url: '@Url.Action("GuardarUsuario", "Usuario")',
+                        url: '@Url.Action("GuardarCliente", "Cliente")',
                         type: "POST",
                         headers: {
                             operacion: operacion
@@ -335,7 +329,7 @@
 
                             if (data.respuesta) {
                                 tabla.ajax.reload();
-                                $("#modalUsuario").modal("hide");
+                                $("#modalCliente").modal("hide");
                             }
                         },
                         error: function (error) {
@@ -357,16 +351,17 @@
         $("#tbdata tbody").on("click", ".btn-editar", function () {
             operacion = "editar";
             $(".needs-validation").removeClass("was-validated")
-            $("#modalUsuario").modal("show");
+            $("#modalCliente").modal("show");
 
             var filaSeleccionada = $(this).closest('tr');
             var data = tabla.row(filaSeleccionada).data();
 
-            $("#txtidusuario").val(data.idUsuario)
-            $("#txtnombrecompleto").val(data.nombreCompleto)
+            $("#txtidcliente").val(data.idCliente)
+            $("#txtidentificacion").val(data.numeroIdentificacion)
+            $("#txtnombres").val(data.nombresCompletos)
+            $("#txttelefono").val(data.numeroTelefonico)
             $("#txtcorreo").val(data.correo)
-            $("#txtclave").val(data.clave)
-            $("#txtclaveconfirmar").val(data.clave)
+            $("#txtdireccion").val(data.direccion)
 
             console.log(data);
         })
@@ -389,7 +384,7 @@
 
                 if (result.isConfirmed) {
                     jQuery.ajax({
-                        url: '@Url.Action("EliminarUsuario", "Usuario")?idUsuario=' + data.idUsuario,
+                        url: '@Url.Action("EliminarCliente", "Cliente")?idCliente=' + data.idCliente,
                         type: "DELETE",
                         dataType: "json",
                         contentType: "application/json; charset=utf-8",
@@ -408,15 +403,15 @@
 
             })
 
-
             console.log(data);
         })
 
         function limpiarControles() {
-            $("#txtnombrecompleto").val("");
+            $("#txtidentificacion").val("");
+            $("#txtnombres").val("");
+            $("#txttelefono").val("");
             $("#txtcorreo").val("");
-            $("#txtclave").val("");
-            $("#txtclaveconfirmar").val("");
+            $("#txtdireccion").val("");
         }
     </script>
 }

@@ -132,12 +132,26 @@
                     </div>
                     <div class="card-body">
                         <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-dark">Busqueda Cliente</span>
+                            <input type="text" class="form-control form-control-sm" id="txtBuscarCliente">
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
                             <span class="input-group-text bg-dark">Nro. Identificación</span>
-                            <input type="text" class="form-control form-control-sm" id="txtdocumentocliente">
+                            <input type="text" class="form-control form-control-sm" id="txtdocumentocliente" readonly>
                         </div>
                         <div class="input-group input-group-sm mb-2">
                             <span class="input-group-text bg-dark">Nombres</span>
-                            <input type="text" class="form-control form-control-sm" id="txtnombrecliente">
+                            <input type="text" class="form-control form-control-sm" id="txtnombrecliente" readonly>
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-dark">Teléfono</span>
+                            <input type="text" class="form-control form-control-sm" id="txttelefonocliente" readonly>
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-dark">Dirección</span>
+                            <textarea class="form-control form-control-sm" id="txtdireccioncliente" rows="3" readonly>
+
+                            </textarea>
                         </div>
                     </div>
                 </div>
@@ -191,6 +205,41 @@
                 //$(this).val(ui.item.label);
                 //$(this).data("idproducto",ui.item.value);
                 AgregarProducto(ui.item.value)
+                $(this).val("");
+            },
+            focus: function (event, ui) {
+                event.preventDefault();
+                $(this).val(ui.item.label);
+            }
+        })
+
+        $("#txtBuscarCliente").autocomplete({
+            source: function (request, response) {
+
+                jQuery.ajax({
+                    url: "@Url.Action("AutoCompleteClient","Home")?search=" + request.term,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        response(
+                            $.map(data, function (item) {
+                                return { label: item.label, value: item.values }
+                            })
+                        )
+                    },
+                    error: function (error) {
+                        console.log("bad")
+                    }
+                })
+            },
+            minLength: 1,
+            select: function (event, ui) {
+                event.preventDefault();
+                console.log(ui.item.value);
+                $("#txtdocumentocliente").val(ui.item.value.numeroIdentificacion);
+                $("#txtnombrecliente").val(ui.item.value.nombresCompletos);
+                $("#txttelefonocliente").val(ui.item.value.numeroTelefonico);
+                $("#txtdireccioncliente").val(ui.item.value.direccion);
                 $(this).val("");
             },
             focus: function (event, ui) {
@@ -412,11 +461,12 @@
 
             calcularCambio();
 
-
             var request_body = {
                 TipoPago: $("#cbotipopago option:selected").val(),
                 DocumentoCliente: $("#txtdocumentocliente").val(),
                 NombreCliente: $("#txtnombrecliente").val(),
+                TelefonoCliente: $("#txttelefonocliente").val(),
+                DireccionCliente: $("#txtdireccioncliente").val(),
                 MontoPagoCon: parseFloat($("#txtPagoCon").val()),
                 MontoCambio: parseFloat($("#txtCambio").val().replace("C$/. ", "", "gi")),
                 MontoSubTotal: parseFloat($("#txtSubTotal").val().replace("C$/. ", "", "gi")),
@@ -458,6 +508,8 @@
                         $("#txtCambio").val("");
                         $("#txtdocumentocliente").val("");
                         $("#txtnombrecliente").val("");
+                        $("#txttelefonocliente").val("");
+                        $("#txtdireccioncliente").val("");
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -470,9 +522,6 @@
                 beforeSend: function () {
                 }
             });
-
-
-
         })
     </script>
 
