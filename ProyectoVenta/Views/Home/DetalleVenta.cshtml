@@ -143,6 +143,16 @@
                             <span class="input-group-text bg-dark">Nombres</span>
                             <input type="text" class="form-control form-control-sm" id="txtnombrecliente" disabled>
                         </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-dark">Teléfono</span>
+                            <input type="text" class="form-control form-control-sm" id="txttelefonocliente" readonly>
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-dark">Dirección</span>
+                            <textarea class="form-control form-control-sm" id="txtdireccioncliente" rows="3" readonly>
+
+                            </textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -153,7 +163,6 @@
 
 @section Scripts{
     <script>
-
         $("#btnbuscar").on("click", function () {
 
             jQuery.ajax({
@@ -184,6 +193,8 @@
 
                         $("#txtdocumentocliente").val(data.documentoCliente);
                         $("#txtnombrecliente").val(data.nombreCliente);
+                        $("#txttelefonocliente").val(data.telefonoCliente);
+                        $("#txtdireccioncliente").val(data.direccionCliente);
 
                     } else {
                         Swal.fire({
@@ -201,6 +212,8 @@
 
                         $("#txtdocumentocliente").val("");
                         $("#txtnombrecliente").val("");
+                        $("#txttelefonocliente").val("");
+                        $("#txtdireccioncliente").val("");
                     }
                 },
                 error: function (error) {
